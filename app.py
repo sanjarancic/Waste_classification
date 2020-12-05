@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
-from fastai.tabular import *
+import torch
+import io
 import os
 from PIL import Image
 
@@ -28,16 +29,14 @@ def predict():
         file = request.files['file']
         img_bytes = file.read()
         transformed_image = transform_image(img_bytes)
-        prob, preds = torch.max(nn.Softmax(dim=1)(model(transformed_image)), dim=1)
-
+        prob, preds = torch.max(torch.nn.Softmax(dim=1)(model(transformed_image)), dim=1)
         return jsonify({'probability': prob[0].item(), 'class': classes[preds[0].item()]})
 
 
 def transform_image(img_bytes):
     my_transforms = transforms.Compose([transforms.Resize(255),
                                         transforms.CenterCrop(224),
-                                        transforms.ToTensor(),
-                                        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+                                        transforms.ToTensor()])
     image = Image.open(io.BytesIO(img_bytes))
     return my_transforms(image).unsqueeze(0)
 
