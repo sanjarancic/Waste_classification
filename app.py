@@ -3,6 +3,7 @@ import torch
 import io
 import os
 from PIL import Image
+from flask_cors import CORS
 
 from torchvision.transforms import transforms
 
@@ -10,6 +11,8 @@ cwd = os.getcwd()
 path = cwd + '/resnet_model'
 
 app = Flask(__name__)
+
+CORS(app, resources={r'/*': {'origins': '*'}})
 
 model = torch.load('resnet_model.pt', map_location=torch.device('cpu'))
 
@@ -42,5 +45,5 @@ def transform_image(img_bytes):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
 
