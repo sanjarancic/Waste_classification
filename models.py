@@ -1,6 +1,5 @@
 import bcrypt
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
 from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
@@ -14,7 +13,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True)
     password = db.Column(db.String)
-    adress = db.Column(db.String)
+    address = db.Column(db.String)
     score = db.Column(db.Integer)
 
     def __generate_hash(self, password):
@@ -23,10 +22,10 @@ class User(db.Model):
     def check_hash(self, password):
         return bcrypt.check_password_hash(self.password, password)
 
-    def __init__(self, username, password, adress, score):
+    def __init__(self, username, password, address, score):
         self.username = username
         self.password = self.__generate_hash(password)
-        self.adress = adress
+        self.address = address
         self.score = score
 
     def __repr__(self):
@@ -36,7 +35,7 @@ class User(db.Model):
         return {
             'id': self.id,
             'username': self.username,
-            'adress': self.adress,
+            'address': self.address,
             'score': self.score
         }
 
@@ -66,9 +65,9 @@ class Company(db.Model):
     site = db.Column(db.String)
     score = db.Column(db.Integer)
     waste_created = db.Column(db.String)
-    waste_created_quantity = db.Column(db.String)
+    waste_created_quantity = db.Column(db.Float)
     waste_required = db.Column(db.String)
-    waste_required_quantity = db.Column(db.String)
+    waste_required_quantity = db.Column(db.Float)
 
     def __generate_hash(self, password):
         return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")
@@ -97,7 +96,14 @@ class Company(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'username': self.username
+            'username': self.username,
+            'mail': self.mail,
+            'site': self.site,
+            'score': self.score,
+            'waste_created': self.waste_created,
+            'waste_created_quantity': self.waste_created_quantity,
+            'waste_required': self.waste_required,
+            'waste_required_quantity': self.waste_required_quantity
         }
 
     @staticmethod
